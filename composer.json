@@ -1,5 +1,5 @@
 {
-    "name": "happenv/filament-turnstile",
+    "name": "happenv-com/filament-turnstile",
     "description": "Cloudflare Turnstile panel plugin for Filament v5 — register once, auto-protect login (and optionally registration / password reset).",
     "keywords": [
         "filament",
