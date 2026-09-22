@@ -1,6 +1,6 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Http;
+namespace Happenv\FilamentTurnstile\Http;
 
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;

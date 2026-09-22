@@ -1,9 +1,9 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Concerns;
+namespace Happenv\FilamentTurnstile\Concerns;
 
 use Illuminate\Validation\ValidationException;
-use MuazzamBuilds\FilamentTurnstile\Forms\Components\Turnstile;
+use Happenv\FilamentTurnstile\Forms\Components\Turnstile;
 
 trait InteractsWithTurnstile
 {

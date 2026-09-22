@@ -1,9 +1,9 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Tests;
+namespace Happenv\FilamentTurnstile\Tests;
 
 use Illuminate\Support\Facades\Http;
-use MuazzamBuilds\FilamentTurnstile\Http\TurnstileVerifier;
+use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
 
 class TurnstileVerifierTest extends TestCase
 {

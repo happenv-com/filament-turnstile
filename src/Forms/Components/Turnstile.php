@@ -1,12 +1,12 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Forms\Components;
+namespace Happenv\FilamentTurnstile\Forms\Components;
 
 use Closure;
 use Filament\Forms\Components\Field;
-use MuazzamBuilds\FilamentTurnstile\Http\TurnstileVerifier;
-use MuazzamBuilds\FilamentTurnstile\Rules\TurnstileRule;
-use MuazzamBuilds\FilamentTurnstile\TurnstilePlugin;
+use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
+use Happenv\FilamentTurnstile\Rules\TurnstileRule;
+use Happenv\FilamentTurnstile\TurnstilePlugin;
 
 class Turnstile extends Field
 {

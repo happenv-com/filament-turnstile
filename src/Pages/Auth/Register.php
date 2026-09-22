@@ -1,10 +1,10 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Pages\Auth;
+namespace Happenv\FilamentTurnstile\Pages\Auth;
 
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Schemas\Schema;
-use MuazzamBuilds\FilamentTurnstile\Concerns\InteractsWithTurnstile;
+use Happenv\FilamentTurnstile\Concerns\InteractsWithTurnstile;
 
 class Register extends BaseRegister
 {

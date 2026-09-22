@@ -1,8 +1,8 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Tests;
+namespace Happenv\FilamentTurnstile\Tests;
 
-use MuazzamBuilds\FilamentTurnstile\FilamentTurnstileServiceProvider;
+use Happenv\FilamentTurnstile\FilamentTurnstileServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra

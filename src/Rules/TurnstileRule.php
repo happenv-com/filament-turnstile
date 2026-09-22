@@ -1,10 +1,10 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Rules;
+namespace Happenv\FilamentTurnstile\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use MuazzamBuilds\FilamentTurnstile\Http\TurnstileVerifier;
+use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
 
 class TurnstileRule implements ValidationRule
 {

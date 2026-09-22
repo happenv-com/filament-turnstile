@@ -1,10 +1,10 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Pages\Auth\PasswordReset;
+namespace Happenv\FilamentTurnstile\Pages\Auth\PasswordReset;
 
 use Filament\Auth\Pages\PasswordReset\RequestPasswordReset as BaseRequestPasswordReset;
 use Filament\Schemas\Schema;
-use MuazzamBuilds\FilamentTurnstile\Concerns\InteractsWithTurnstile;
+use Happenv\FilamentTurnstile\Concerns\InteractsWithTurnstile;
 
 class RequestPasswordReset extends BaseRequestPasswordReset
 {

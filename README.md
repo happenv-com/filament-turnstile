@@ -13,7 +13,7 @@ Cloudflare Turnstile panel plugin for **Filament v5**. Register it once on a pan
 ## Installation
 
 ```bash
-composer require muazzambuilds/filament-turnstile
+composer require happenv/filament-turnstile
 ```
 
 Publish the config (optional):
@@ -38,7 +38,7 @@ Create a widget and get keys at [dash.cloudflare.com](https://dash.cloudflare.co
 Call `->plugin(...)` **after** `->login()` / `->registration()` / `->passwordReset()` so the plugin can swap the auth page classes:
 
 ```php
-use MuazzamBuilds\FilamentTurnstile\TurnstilePlugin;
+use Happenv\FilamentTurnstile\TurnstilePlugin;
 
 public function panel(Panel $panel): Panel
 {
@@ -71,7 +71,7 @@ TurnstilePlugin::make()
 For custom auth pages or any Filament form:
 
 ```php
-use MuazzamBuilds\FilamentTurnstile\Forms\Components\Turnstile;
+use Happenv\FilamentTurnstile\Forms\Components\Turnstile;
 
 Turnstile::make('cf-turnstile-response')
     ->theme('dark')
@@ -91,7 +91,7 @@ Disable auto-swap and extend or compose yourself:
 Extend the packaged pages or use the trait:
 
 ```php
-use MuazzamBuilds\FilamentTurnstile\Pages\Auth\Login as TurnstileLogin;
+use Happenv\FilamentTurnstile\Pages\Auth\Login as TurnstileLogin;
 
 class Login extends TurnstileLogin
 {
@@ -137,13 +137,6 @@ php artisan vendor:publish --tag=filament-turnstile-views
 composer install
 composer test
 ```
-
-
-## Support
-
-If this package helps you, consider supporting development:
-
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/muazzambuilds)
 
 ## License
 MIT — see [LICENSE](LICENSE).

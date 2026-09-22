@@ -1,11 +1,11 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Pages\Auth;
+namespace Happenv\FilamentTurnstile\Pages\Auth;
 
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
-use MuazzamBuilds\FilamentTurnstile\Concerns\InteractsWithTurnstile;
+use Happenv\FilamentTurnstile\Concerns\InteractsWithTurnstile;
 
 class Login extends BaseLogin
 {

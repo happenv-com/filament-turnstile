@@ -1,5 +1,5 @@
 {
-    "name": "muazzambuilds/filament-turnstile",
+    "name": "happenv/filament-turnstile",
     "description": "Cloudflare Turnstile panel plugin for Filament v5 — register once, auto-protect login (and optionally registration / password reset).",
     "keywords": [
         "filament",
@@ -9,21 +9,26 @@
         "cloudflare",
         "captcha"
     ],
-    "homepage": "https://github.com/muazzambuilds/filament-turnstile",
+    "homepage": "https://github.com/happenv-com/filament-turnstile",
     "license": "MIT",
     "authors": [
         {
             "name": "Muazzam Builds",
             "email": "me@muazzamalikhan.com",
             "homepage": "https://github.com/muazzambuilds"
+        },
+        {
+            "name": "Happenv",
+            "email": "code@happenv.com",
+            "homepage": "https://github.com/happenv-com"
         }
     ],
     "require": {
         "php": "^8.2",
         "filament/filament": "^5.0",
-        "illuminate/contracts": "^11.0|^12.0",
-        "illuminate/http": "^11.0|^12.0",
-        "illuminate/support": "^11.0|^12.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/http": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
         "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
@@ -32,18 +37,18 @@
     },
     "autoload": {
         "psr-4": {
-            "MuazzamBuilds\\FilamentTurnstile\\": "src/"
+            "Happenv\\FilamentTurnstile\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "MuazzamBuilds\\FilamentTurnstile\\Tests\\": "tests/"
+            "Happenv\\FilamentTurnstile\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "MuazzamBuilds\\FilamentTurnstile\\FilamentTurnstileServiceProvider"
+                "Happenv\\FilamentTurnstile\\FilamentTurnstileServiceProvider"
             ]
         }
     },

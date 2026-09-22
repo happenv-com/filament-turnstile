@@ -1,8 +1,8 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile;
+namespace Happenv\FilamentTurnstile;
 
-use MuazzamBuilds\FilamentTurnstile\Http\TurnstileVerifier;
+use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

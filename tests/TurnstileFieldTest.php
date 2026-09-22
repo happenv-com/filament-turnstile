@@ -1,11 +1,11 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile\Tests;
+namespace Happenv\FilamentTurnstile\Tests;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
-use MuazzamBuilds\FilamentTurnstile\Forms\Components\Turnstile;
-use MuazzamBuilds\FilamentTurnstile\Rules\TurnstileRule;
+use Happenv\FilamentTurnstile\Forms\Components\Turnstile;
+use Happenv\FilamentTurnstile\Rules\TurnstileRule;
 
 class TurnstileFieldTest extends TestCase
 {

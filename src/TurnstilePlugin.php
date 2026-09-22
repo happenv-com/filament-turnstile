@@ -1,13 +1,13 @@
 <?php
 
-namespace MuazzamBuilds\FilamentTurnstile;
+namespace Happenv\FilamentTurnstile;
 
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use MuazzamBuilds\FilamentTurnstile\Pages\Auth\Login;
-use MuazzamBuilds\FilamentTurnstile\Pages\Auth\PasswordReset\RequestPasswordReset;
-use MuazzamBuilds\FilamentTurnstile\Pages\Auth\Register;
+use Happenv\FilamentTurnstile\Pages\Auth\Login;
+use Happenv\FilamentTurnstile\Pages\Auth\PasswordReset\RequestPasswordReset;
+use Happenv\FilamentTurnstile\Pages\Auth\Register;
 
 class TurnstilePlugin implements Plugin
 {
