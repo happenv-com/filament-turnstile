@@ -56,6 +56,17 @@ public function panel(Panel $panel): Panel
 
 **Defaults:** login is protected; registration and password-reset request are not.
 
+Each page is toggled independently, so any combination works — e.g. registration and password reset only:
+
+```php
+TurnstilePlugin::make()
+    ->protectLogin(false)
+    ->protectRegistration()
+    ->protectPasswordReset()
+```
+
+Login protection works with Filament multi-factor authentication (app codes, passkeys): Turnstile appears only on the password step, and the multi-factor challenge step has no widget and no second verification.
+
 ### Widget options
 
 ```php
