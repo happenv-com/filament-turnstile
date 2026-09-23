@@ -99,15 +99,22 @@ Disable auto-swap and extend or compose yourself:
 
 ### Custom auth pages
 
-Keep extending Filament's page and add the matching trait — it carries everything the packaged page does:
+Keep extending Filament's page and add the matching trait from `Happenv\FilamentTurnstile\Concerns` — it carries everything the packaged page does:
 
-| Filament page | Trait | What it does |
-|---|---|---|
-| `Filament\Auth\Pages\Login` | `InteractsWithTurnstileLogin` | Default form with the widget. Resets the widget after a wrong password. Skips the widget on the multi-factor challenge step (app codes, passkeys) — the token was already verified on the password step, and Cloudflare accepts a token only once. |
-| `Filament\Auth\Pages\Register` | `InteractsWithTurnstileRegistration` | Default form with the widget. Keeps the token out of the data passed to user creation. |
-| `Filament\Auth\Pages\PasswordReset\RequestPasswordReset` | `InteractsWithTurnstilePasswordReset` | Default form with the widget. Resets the widget after each request, so another one can be sent. |
+| Your page extends | Use trait |
+|---|---|
+| `Login` | `InteractsWithTurnstileLogin` |
+| `Register` | `InteractsWithTurnstileRegistration` |
+| `RequestPasswordReset` | `InteractsWithTurnstilePasswordReset` |
 
-All three reset the widget on any validation error. `Happenv\FilamentTurnstile\Concerns\InteractsWithTurnstile` is the shared base — use it directly only for forms other than these auth pages.
+What each trait adds:
+
+- **Every trait** gives the page a default form with the widget and resets the widget on any validation error.
+- **`InteractsWithTurnstileLogin`** also resets the widget after a wrong password and skips it on the multi-factor challenge step (app codes, passkeys). The token was already verified on the password step, and Cloudflare accepts a token only once.
+- **`InteractsWithTurnstileRegistration`** also keeps the token out of the data passed to user creation.
+- **`InteractsWithTurnstilePasswordReset`** also resets the widget after each request, so another one can be sent.
+
+`InteractsWithTurnstile` is the shared base — use it directly only for forms other than these auth pages.
 
 ```php
 use Filament\Auth\Pages\Login as BaseLogin;
