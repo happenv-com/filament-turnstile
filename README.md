@@ -1,19 +1,31 @@
 # Filament Turnstile
 
-Cloudflare Turnstile panel plugin for **Filament v5**. Register it once on a panel and login is protected automatically — optionally registration and password-reset request too. No form schema edits for the common case.
+Cloudflare Turnstile panel plugin for **Filament v4 and v5**. Register it once on a panel and login is protected automatically — optionally registration and password-reset request too. No form schema edits for the common case.
+
+Based on [muazzambuilds/filament-turnstile](https://github.com/muazzambuilds/filament-turnstile) by Muazzam Builds.
+
+## Key features
+
+- **Login, registration and password reset** — one panel plugin protects Filament's auth pages; each page is switched on or off on its own.
+- **Multi-factor authentication aware** — Turnstile runs on the password step only, never again on the app code or passkey challenge.
+- **Custom auth pages** — one trait per page (`Login`, `Register`, `RequestPasswordReset`) adds Turnstile to your own subclasses, plus a `Turnstile` form field for any other Filament form.
+- **Testing helpers** — Livewire test mixins (`assertTurnstileBlocks()`, `assertTurnstileAllows()`, `passTurnstile()`, …) for Pest and PHPUnit, with Cloudflare's test keys answered locally, so tests never reach Cloudflare.
+- **Laravel 11, 12 and 13, Filament 4 and 5** — see [Requirements](#requirements).
+- **Translations** — validation messages in 64 languages, every locale Filament ships. See [Supported languages](#supported-languages).
+- **Safe without keys** — with no keys configured the widget is hidden and verification is skipped, so local apps still boot.
 
 ## Requirements
 
 | Dependency | Version |
 |---|---|
 | PHP | `^8.2` |
-| Laravel | `^11` / `^12` |
-| Filament | `^5.0` |
+| Laravel | `^11` / `^12` / `^13` |
+| Filament | `^4.0` / `^5.0` |
 
 ## Installation
 
 ```bash
-composer require happenv/filament-turnstile
+composer require happenv-com/filament-turnstile
 ```
 
 Publish the config (optional):
@@ -164,7 +176,7 @@ If keys are missing, the widget is hidden and server validation is skipped so lo
 
 ## Testing your app
 
-The package adds Turnstile helpers to Livewire's test object (`Livewire::test(...)`), the same way Filament adds `fillForm()` — they work in Pest and PHPUnit alike. Each helper switches the app to the Cloudflare test keys above and fills the dummy token, so no request reaches Cloudflare.
+The package adds Turnstile helpers to Livewire's test object (`Livewire::test(...)`, or `livewire(...)` from [pest-plugin-livewire](https://pestphp.com/docs/plugins#livewire)), the same way Filament adds `fillForm()` — they work in Pest and PHPUnit alike. Each helper switches the app to the Cloudflare test keys above and fills the dummy token, so no request reaches Cloudflare.
 
 Test the page your panel registers — the packaged one, or your own page using a trait:
 
@@ -213,6 +225,33 @@ Livewire::test(Login::class)
 
 The helpers change the `filament-turnstile.*` keys in the config for the rest of that test.
 
+### Browser tests
+
+The helpers above extend Livewire's test object; [Pest's browser pages](https://pestphp.com/docs/browser-testing) cannot be extended the same way. In a browser test, switch to the test keys yourself — Pest serves the app from the test process, so the config applies to the page. The real widget then solves itself; wait for its token before submitting:
+
+```php
+use Happenv\FilamentTurnstile\Testing\TestsTurnstile;
+
+it('logs in through Turnstile', function () {
+    config([
+        'filament-turnstile.site_key' => TestsTurnstile::PASSING_SITE_KEY,
+        'filament-turnstile.secret_key' => TestsTurnstile::PASSING_SECRET_KEY, // BLOCKING_SECRET_KEY to reject the token
+    ]);
+
+    visit('/admin/login')
+        ->assertScript(
+            "document.querySelector('.fi-fo-turnstile [name=\"cf-turnstile-response\"]')?.value",
+            TestsTurnstile::DUMMY_TOKEN,
+        )
+        ->fill('[id="form.email"]', 'jane@example.com')
+        ->fill('[id="form.password"]', 'password')
+        ->submit()
+        ->assertPathIs('/admin');
+});
+```
+
+The widget loads from `challenges.cloudflare.com`, so browser tests need network access.
+
 ## Configuration
 
 ```php
@@ -228,6 +267,18 @@ return [
 ];
 ```
 
+## Translations
+
+Validation messages ship in every locale Filament ships — see [Supported languages](#supported-languages). The app locale picks the language.
+
+To change a message or add a language, publish the files:
+
+```bash
+php artisan vendor:publish --tag=filament-turnstile-translations
+```
+
+The widget itself follows the browser language; set `->language()` or `TURNSTILE_LANGUAGE` to fix it.
+
 ## Publish views
 
 ```bash
@@ -236,10 +287,41 @@ php artisan vendor:publish --tag=filament-turnstile-views
 
 ## Testing this package
 
+The tests use Pest 5 with the Laravel, Livewire and browser plugins, so they need PHP 8.4 and run against Laravel 13 and Filament 5.
+
 ```bash
 composer install
 composer test
 ```
 
+The browser tests drive the real widget from `challenges.cloudflare.com` with Cloudflare's test keys, so they need network access and [Pest's browser plugin](https://pestphp.com/docs/browser-testing) set up with Playwright:
+
+```bash
+npm install
+npx playwright install chromium
+composer test:browser
+```
+
 ## License
 MIT — see [LICENSE](LICENSE).
+
+## Supported languages
+
+| Language | Language | Language | Language |
+|---|---|---|---|
+| Amharic `am` | Persian `fa` | Lithuanian `lt` | Slovenian `sl` |
+| Arabic `ar` | Finnish `fi` | Mizo `lus` | Albanian `sq` |
+| Azerbaijani `az` | Filipino `fil` | Latvian `lv` | Serbian (Cyrillic) `sr_Cyrl` |
+| Bulgarian `bg` | French `fr` | Macedonian `mk` | Serbian (Latin) `sr_Latn` |
+| Bengali `bn` | Hebrew `he` | Mongolian `mn` | Swedish `sv` |
+| Bosnian `bs` | Hindi `hi` | Malay `ms` | Swahili `sw` |
+| Catalan `ca` | Croatian `hr` | Burmese `my` | Tajik `tg` |
+| Central Kurdish `ckb` | Hungarian `hu` | Norwegian Bokmål `nb` | Thai `th` |
+| Czech `cs` | Armenian `hy` | Nepali `ne` | Turkish `tr` |
+| Danish `da` | Indonesian `id` | Dutch `nl` | Ukrainian `uk` |
+| German `de` | Italian `it` | Polish `pl` | Urdu `ur` |
+| Greek `el` | Japanese `ja` | Portuguese `pt` | Uzbek `uz` |
+| English `en` | Georgian `ka` | Portuguese (Brazil) `pt_BR` | Vietnamese `vi` |
+| Spanish `es` | Khmer `km` | Romanian `ro` | Chinese (Simplified) `zh_CN` |
+| Estonian `et` | Korean `ko` | Russian `ru` | Chinese (Hong Kong) `zh_HK` |
+| Basque `eu` | Kurdish `ku` | Slovak `sk` | Chinese (Traditional) `zh_TW` |

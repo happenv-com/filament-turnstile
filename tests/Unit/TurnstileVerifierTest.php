@@ -1,99 +1,75 @@
 <?php
 
-namespace Happenv\FilamentTurnstile\Tests;
-
-use Illuminate\Support\Facades\Http;
 use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
-use PHPUnit\Framework\Attributes\DataProvider;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 
-class TurnstileVerifierTest extends TestCase
-{
-    public function test_it_returns_success_when_cloudflare_accepts_the_token(): void
-    {
-        Http::fake([
-            'challenges.cloudflare.com/*' => Http::response([
-                'success' => true,
-                'error-codes' => [],
-            ]),
-        ]);
+it('returns success when Cloudflare accepts the token', function (): void {
+    Http::fake([
+        'challenges.cloudflare.com/*' => Http::response([
+            'success' => true,
+            'error-codes' => [],
+        ]),
+    ]);
 
-        $result = app(TurnstileVerifier::class)->verify('valid-token', '127.0.0.1');
+    $result = app(TurnstileVerifier::class)->verify('valid-token', '127.0.0.1');
 
-        $this->assertTrue($result['success']);
+    expect($result['success'])->toBeTrue();
 
-        Http::assertSent(function ($request): bool {
-            return $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-                && $request['response'] === 'valid-token'
-                && $request['remoteip'] === '127.0.0.1'
-                && filled($request['secret']);
-        });
-    }
+    Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+        && $request['response'] === 'valid-token'
+        && $request['remoteip'] === '127.0.0.1'
+        && filled($request['secret']));
+});
 
-    public function test_it_returns_failure_for_blank_token(): void
-    {
-        $result = app(TurnstileVerifier::class)->verify(null);
+it('returns failure for a blank token', function (): void {
+    $result = app(TurnstileVerifier::class)->verify(null);
 
-        $this->assertFalse($result['success']);
-        $this->assertContains('missing-input-response', $result['error-codes']);
-    }
+    expect($result['success'])->toBeFalse()
+        ->and($result['error-codes'])->toContain('missing-input-response');
+});
 
-    public function test_it_skips_verification_when_keys_are_missing(): void
-    {
-        config([
-            'filament-turnstile.site_key' => null,
-            'filament-turnstile.secret_key' => null,
-        ]);
+it('skips verification when keys are missing', function (): void {
+    config([
+        'filament-turnstile.site_key' => null,
+        'filament-turnstile.secret_key' => null,
+    ]);
 
-        Http::fake();
+    Http::fake();
 
-        $verifier = app(TurnstileVerifier::class);
+    $verifier = app(TurnstileVerifier::class);
 
-        $this->assertFalse($verifier->isConfigured());
-        $this->assertTrue($verifier->verify('anything')['success']);
+    expect($verifier->isConfigured())->toBeFalse()
+        ->and($verifier->verify('anything')['success'])->toBeTrue();
 
-        Http::assertNothingSent();
-    }
+    Http::assertNothingSent();
+});
 
-    public function test_it_maps_cloudflare_error_codes(): void
-    {
-        Http::fake([
-            'challenges.cloudflare.com/*' => Http::response([
-                'success' => false,
-                'error-codes' => ['timeout-or-duplicate'],
-            ]),
-        ]);
+it('maps Cloudflare error codes', function (): void {
+    Http::fake([
+        'challenges.cloudflare.com/*' => Http::response([
+            'success' => false,
+            'error-codes' => ['timeout-or-duplicate'],
+        ]),
+    ]);
 
-        $result = app(TurnstileVerifier::class)->verify('used-token');
+    $result = app(TurnstileVerifier::class)->verify('used-token');
 
-        $this->assertFalse($result['success']);
-        $this->assertSame(['timeout-or-duplicate'], $result['error-codes']);
-    }
+    expect($result['success'])->toBeFalse()
+        ->and($result['error-codes'])->toBe(['timeout-or-duplicate']);
+});
 
-    /**
-     * @return array<string, array{string, bool, array<int, string>}>
-     */
-    public static function cloudflareTestSecretKeys(): array
-    {
-        return [
-            'always passes' => ['1x0000000000000000000000000000000AA', true, []],
-            'always fails' => ['2x0000000000000000000000000000000AA', false, ['invalid-input-response']],
-            'token already spent' => ['3x0000000000000000000000000000000AA', false, ['timeout-or-duplicate']],
-        ];
-    }
+it('answers Cloudflare test secret keys without a request', function (string $secretKey, bool $success, array $errorCodes): void {
+    config(['filament-turnstile.secret_key' => $secretKey]);
 
-    /**
-     * @param  array<int, string>  $errorCodes
-     */
-    #[DataProvider('cloudflareTestSecretKeys')]
-    public function test_it_answers_cloudflare_test_secret_keys_without_a_request(string $secretKey, bool $success, array $errorCodes): void
-    {
-        config(['filament-turnstile.secret_key' => $secretKey]);
+    Http::preventStrayRequests();
 
-        Http::preventStrayRequests();
+    $result = app(TurnstileVerifier::class)->verify('XXXX.DUMMY.TOKEN.XXXX');
 
-        $result = app(TurnstileVerifier::class)->verify('XXXX.DUMMY.TOKEN.XXXX');
-
-        $this->assertSame($success, $result['success']);
-        $this->assertSame($errorCodes, $result['error-codes']);
-    }
-}
+    expect($result['success'])->toBe($success)
+        ->and($result['error-codes'])->toBe($errorCodes);
+})->with([
+    'always passes' => ['1x0000000000000000000000000000000AA', true, []],
+    'always fails' => ['2x0000000000000000000000000000000AA', false, ['invalid-input-response']],
+    'token already spent' => ['3x0000000000000000000000000000000AA', false, ['timeout-or-duplicate']],
+]);

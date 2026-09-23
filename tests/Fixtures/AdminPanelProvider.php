@@ -2,6 +2,7 @@
 
 namespace Happenv\FilamentTurnstile\Tests\Fixtures;
 
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Happenv\FilamentTurnstile\TurnstilePlugin;
@@ -14,6 +15,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->default()
+            ->pages([Dashboard::class])
             ->login()
             ->registration()
             ->passwordReset()

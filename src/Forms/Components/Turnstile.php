@@ -40,7 +40,11 @@ class Turnstile extends Field
             app(TurnstileVerifier::class),
         ));
 
-        $this->validationAttribute(__('filament-turnstile::validation.missing-input-response'));
+        $this->validationAttribute('Turnstile');
+
+        $this->validationMessages([
+            'required' => fn (): string => __('filament-turnstile::validation.missing-input-response'),
+        ]);
     }
 
     public function theme(string | Closure | null $theme): static

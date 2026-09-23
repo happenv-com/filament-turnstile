@@ -5,10 +5,21 @@
          colors="true"
          cacheDirectory=".phpunit.cache">
     <testsuites>
-        <testsuite name="Filament Turnstile Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Browser">
+            <directory>tests/Browser</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
     <php>
         <env name="APP_KEY" value="base64:2fl+KtvkdphvQyEFM8K4eKpQxqGzqZ8Y0vHhQzqzqzq="/>
         <env name="TURNSTILE_SITE_KEY" value="test-site-key"/>
