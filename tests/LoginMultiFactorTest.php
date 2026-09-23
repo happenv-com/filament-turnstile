@@ -2,59 +2,19 @@
 
 namespace Happenv\FilamentTurnstile\Tests;
 
-use Filament\Facades\Filament;
-use Filament\Panel;
-use Filament\PanelProvider;
 use Happenv\FilamentTurnstile\Pages\Auth\Login;
 use Happenv\FilamentTurnstile\Tests\Fixtures\CodeMultiFactorProvider;
-use Happenv\FilamentTurnstile\Tests\Fixtures\User;
-use Happenv\FilamentTurnstile\TurnstilePlugin;
+use Happenv\FilamentTurnstile\Tests\Fixtures\CustomLogin;
 use Illuminate\Http\Client\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class LoginMultiFactorTest extends TestCase
+class LoginMultiFactorTest extends PanelTestCase
 {
-    protected function getPackageProviders($app): array
-    {
-        return [
-            ...parent::getPackageProviders($app),
-            \BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
-            \BladeUI\Icons\BladeIconsServiceProvider::class,
-            \Filament\Actions\ActionsServiceProvider::class,
-            \Filament\FilamentServiceProvider::class,
-            \Filament\Forms\FormsServiceProvider::class,
-            \Filament\Infolists\InfolistsServiceProvider::class,
-            \Filament\Notifications\NotificationsServiceProvider::class,
-            \Filament\Schemas\SchemasServiceProvider::class,
-            \Filament\Support\SupportServiceProvider::class,
-            \Filament\Tables\TablesServiceProvider::class,
-            \Filament\Widgets\WidgetsServiceProvider::class,
-            \Livewire\LivewireServiceProvider::class,
-            \RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider::class,
-            LoginMultiFactorPanelProvider::class,
-        ];
-    }
-
-    protected function defineEnvironment($app): void
-    {
-        parent::defineEnvironment($app);
-
-        $app['config']->set('auth.providers.users.model', User::class);
-        $app['config']->set('database.default', 'testing');
-    }
-
-    protected function defineDatabaseMigrations(): void
-    {
-        $this->loadLaravelMigrations();
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        Filament::setCurrentPanel('admin');
 
         // Cloudflare accepts a token exactly once; a second siteverify of the same token fails.
         $verifiedTokens = [];
@@ -74,15 +34,23 @@ class LoginMultiFactorTest extends TestCase
         ]);
     }
 
-    public function test_user_passes_the_multi_factor_challenge_after_turnstile(): void
+    /**
+     * @return array<string, array{class-string}>
+     */
+    public static function loginPages(): array
     {
-        $user = User::create([
-            'name' => 'Jane',
-            'email' => 'jane@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        return [
+            'packaged page' => [Login::class],
+            'custom page using the trait' => [CustomLogin::class],
+        ];
+    }
 
-        Livewire::test(Login::class)
+    #[DataProvider('loginPages')]
+    public function test_user_passes_the_multi_factor_challenge_after_turnstile(string $page): void
+    {
+        $user = $this->createUser();
+
+        Livewire::test($page)
             ->assertSeeHtml('fi-fo-turnstile')
             ->set('data.email', 'jane@example.com')
             ->set('data.password', 'password')
@@ -98,15 +66,12 @@ class LoginMultiFactorTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_login_requires_turnstile_before_the_multi_factor_challenge(): void
+    #[DataProvider('loginPages')]
+    public function test_login_requires_turnstile_before_the_multi_factor_challenge(string $page): void
     {
-        User::create([
-            'name' => 'Jane',
-            'email' => 'jane@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $this->createUser();
 
-        Livewire::test(Login::class)
+        Livewire::test($page)
             ->set('data.email', 'jane@example.com')
             ->set('data.password', 'password')
             ->call('authenticate')
@@ -114,21 +79,14 @@ class LoginMultiFactorTest extends TestCase
             ->assertSet('userUndertakingMultiFactorAuthentication', null);
     }
 
-    public function test_challenge_for_one_user_does_not_skip_turnstile_for_another(): void
+    #[DataProvider('loginPages')]
+    public function test_challenge_for_one_user_does_not_skip_turnstile_for_another(string $page): void
     {
-        User::create([
-            'name' => 'Jane',
-            'email' => 'jane@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $this->createUser();
 
-        User::create([
-            'name' => 'John',
-            'email' => 'john@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $this->createUser('john@example.com');
 
-        Livewire::test(Login::class)
+        Livewire::test($page)
             ->set('data.email', 'jane@example.com')
             ->set('data.password', 'password')
             ->set('data.cf-turnstile-response', 'token-1')
@@ -140,19 +98,5 @@ class LoginMultiFactorTest extends TestCase
             ->assertHasErrors(['data.cf-turnstile-response']);
 
         $this->assertGuest();
-    }
-}
-
-class LoginMultiFactorPanelProvider extends PanelProvider
-{
-    public function panel(Panel $panel): Panel
-    {
-        return $panel
-            ->id('admin')
-            ->path('admin')
-            ->default()
-            ->login()
-            ->multiFactorAuthentication([new CodeMultiFactorProvider])
-            ->plugin(TurnstilePlugin::make());
     }
 }

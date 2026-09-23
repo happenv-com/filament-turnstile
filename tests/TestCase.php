@@ -16,8 +16,8 @@ abstract class TestCase extends Orchestra
 
     protected function defineEnvironment($app): void
     {
-        $app['config']->set('filament-turnstile.site_key', '1x00000000000000000000AA');
-        $app['config']->set('filament-turnstile.secret_key', '1x0000000000000000000000000000000AA');
+        $app['config']->set('filament-turnstile.site_key', 'test-site-key');
+        $app['config']->set('filament-turnstile.secret_key', 'test-secret-key');
         $app['config']->set('filament-turnstile.verify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
     }
 }

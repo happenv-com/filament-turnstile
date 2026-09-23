@@ -8,6 +8,18 @@ use Illuminate\Support\Facades\Http;
 class TurnstileVerifier
 {
     /**
+     * Cloudflare's documented test secret keys and what siteverify answers for
+     * them. Answered locally, so tests never reach Cloudflare.
+     *
+     * @var array<string, array{success: bool, error-codes: array<int, string>}>
+     */
+    public const TEST_SECRET_KEY_RESULTS = [
+        '1x0000000000000000000000000000000AA' => ['success' => true, 'error-codes' => []],
+        '2x0000000000000000000000000000000AA' => ['success' => false, 'error-codes' => ['invalid-input-response']],
+        '3x0000000000000000000000000000000AA' => ['success' => false, 'error-codes' => ['timeout-or-duplicate']],
+    ];
+
+    /**
      * @return array{success: bool, error-codes?: array<int, string>}
      */
     public function verify(?string $token, ?string $remoteIp = null): array
@@ -21,6 +33,10 @@ class TurnstileVerifier
                 'success' => false,
                 'error-codes' => ['missing-input-response'],
             ];
+        }
+
+        if (array_key_exists((string) $this->secretKey(), self::TEST_SECRET_KEY_RESULTS)) {
+            return self::TEST_SECRET_KEY_RESULTS[$this->secretKey()];
         }
 
         $payload = [

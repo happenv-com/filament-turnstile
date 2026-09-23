@@ -4,6 +4,7 @@ namespace Happenv\FilamentTurnstile\Tests;
 
 use Illuminate\Support\Facades\Http;
 use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class TurnstileVerifierTest extends TestCase
 {
@@ -66,5 +67,33 @@ class TurnstileVerifierTest extends TestCase
 
         $this->assertFalse($result['success']);
         $this->assertSame(['timeout-or-duplicate'], $result['error-codes']);
+    }
+
+    /**
+     * @return array<string, array{string, bool, array<int, string>}>
+     */
+    public static function cloudflareTestSecretKeys(): array
+    {
+        return [
+            'always passes' => ['1x0000000000000000000000000000000AA', true, []],
+            'always fails' => ['2x0000000000000000000000000000000AA', false, ['invalid-input-response']],
+            'token already spent' => ['3x0000000000000000000000000000000AA', false, ['timeout-or-duplicate']],
+        ];
+    }
+
+    /**
+     * @param  array<int, string>  $errorCodes
+     */
+    #[DataProvider('cloudflareTestSecretKeys')]
+    public function test_it_answers_cloudflare_test_secret_keys_without_a_request(string $secretKey, bool $success, array $errorCodes): void
+    {
+        config(['filament-turnstile.secret_key' => $secretKey]);
+
+        Http::preventStrayRequests();
+
+        $result = app(TurnstileVerifier::class)->verify('XXXX.DUMMY.TOKEN.XXXX');
+
+        $this->assertSame($success, $result['success']);
+        $this->assertSame($errorCodes, $result['error-codes']);
     }
 }

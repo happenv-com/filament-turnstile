@@ -58,7 +58,7 @@ class TurnstileFieldTest extends TestCase
         $this->assertSame('compact', $field->getSize());
         $this->assertSame('en-US', $field->getLanguage());
         $this->assertSame('login', $field->getTurnstileAction());
-        $this->assertSame('1x00000000000000000000AA', $field->getSiteKey());
+        $this->assertSame('test-site-key', $field->getSiteKey());
         $this->assertTrue($field->shouldRenderWidget());
 
         $view = file_get_contents(__DIR__ . '/../resources/views/components/turnstile.blade.php');

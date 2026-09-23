@@ -3,6 +3,8 @@
 namespace Happenv\FilamentTurnstile;
 
 use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
+use Happenv\FilamentTurnstile\Testing\TestsTurnstile;
+use Livewire\Features\SupportTesting\Testable;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -22,5 +24,10 @@ class FilamentTurnstileServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         $this->app->singleton(TurnstileVerifier::class);
+    }
+
+    public function packageBooted(): void
+    {
+        Testable::mixin(new TestsTurnstile);
     }
 }
