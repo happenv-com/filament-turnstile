@@ -125,11 +125,7 @@ class Turnstile extends Field
             return false;
         }
 
-        if ($this->pluginIsEnabled() === false) {
-            return false;
-        }
-
-        return true;
+        return $this->pluginIsEnabled() !== false;
     }
 
     protected function pluginTheme(): ?string

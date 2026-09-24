@@ -3,8 +3,8 @@
 namespace Happenv\FilamentTurnstile\Rules;
 
 use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Happenv\FilamentTurnstile\Http\TurnstileVerifier;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class TurnstileRule implements ValidationRule
 {

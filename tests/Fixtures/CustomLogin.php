@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Happenv\FilamentTurnstile\Tests\Fixtures;
 
 use Filament\Auth\Pages\Login as BaseLogin;

@@ -2,10 +2,23 @@
 
 namespace Happenv\FilamentTurnstile\Tests;
 
+use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
+use BladeUI\Icons\BladeIconsServiceProvider;
+use Filament\Actions\ActionsServiceProvider;
 use Filament\Facades\Filament;
+use Filament\FilamentServiceProvider;
+use Filament\Forms\FormsServiceProvider;
+use Filament\Infolists\InfolistsServiceProvider;
+use Filament\Notifications\NotificationsServiceProvider;
+use Filament\Schemas\SchemasServiceProvider;
+use Filament\Support\SupportServiceProvider;
+use Filament\Tables\TablesServiceProvider;
+use Filament\Widgets\WidgetsServiceProvider;
 use Happenv\FilamentTurnstile\Tests\Fixtures\AdminPanelProvider;
 use Happenv\FilamentTurnstile\Tests\Fixtures\User;
 use Illuminate\Support\Facades\Hash;
+use Livewire\LivewireServiceProvider;
+use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
 /**
  * Boots a Filament panel with login, registration, password reset and a
@@ -17,19 +30,19 @@ abstract class PanelTestCase extends TestCase
     {
         return [
             ...parent::getPackageProviders($app),
-            \BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
-            \BladeUI\Icons\BladeIconsServiceProvider::class,
-            \Filament\Actions\ActionsServiceProvider::class,
-            \Filament\FilamentServiceProvider::class,
-            \Filament\Forms\FormsServiceProvider::class,
-            \Filament\Infolists\InfolistsServiceProvider::class,
-            \Filament\Notifications\NotificationsServiceProvider::class,
-            \Filament\Schemas\SchemasServiceProvider::class,
-            \Filament\Support\SupportServiceProvider::class,
-            \Filament\Tables\TablesServiceProvider::class,
-            \Filament\Widgets\WidgetsServiceProvider::class,
-            \Livewire\LivewireServiceProvider::class,
-            \RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider::class,
+            BladeHeroiconsServiceProvider::class,
+            BladeIconsServiceProvider::class,
+            ActionsServiceProvider::class,
+            FilamentServiceProvider::class,
+            FormsServiceProvider::class,
+            InfolistsServiceProvider::class,
+            NotificationsServiceProvider::class,
+            SchemasServiceProvider::class,
+            SupportServiceProvider::class,
+            TablesServiceProvider::class,
+            WidgetsServiceProvider::class,
+            LivewireServiceProvider::class,
+            BladeCaptureDirectiveServiceProvider::class,
             AdminPanelProvider::class,
         ];
     }

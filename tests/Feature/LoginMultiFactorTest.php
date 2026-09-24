@@ -76,7 +76,7 @@ it('does not let a challenge for one user skip Turnstile for another', function 
         ->call('authenticate')
         ->assertNotSet('userUndertakingMultiFactorAuthentication', null)
         ->set('data.email', 'john@example.com')
-        ->set('data.cf-turnstile-response', null)
+        ->set('data.cf-turnstile-response')
         ->call('authenticate')
         ->assertHasErrors(['data.cf-turnstile-response']);
 

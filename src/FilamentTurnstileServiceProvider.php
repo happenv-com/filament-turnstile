@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Happenv\FilamentTurnstile;
 
 use Happenv\FilamentTurnstile\Http\TurnstileVerifier;

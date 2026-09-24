@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Happenv\FilamentTurnstile\Tests\PanelTestCase;
 use Happenv\FilamentTurnstile\Tests\TestCase;
 

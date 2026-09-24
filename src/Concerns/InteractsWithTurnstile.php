@@ -2,8 +2,8 @@
 
 namespace Happenv\FilamentTurnstile\Concerns;
 
-use Illuminate\Validation\ValidationException;
 use Happenv\FilamentTurnstile\Forms\Components\Turnstile;
+use Illuminate\Validation\ValidationException;
 
 trait InteractsWithTurnstile
 {
