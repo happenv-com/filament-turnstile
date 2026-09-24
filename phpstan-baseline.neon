@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to function is_callable\(\) with array\{''Filament\\\\Auth\\\\Pages\\\\Login'', ''onValidationError''\} will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Pages/Auth/Login.php
+
+		-
+			message: '#^Call to function is_callable\(\) with array\{''Filament\\\\Auth\\\\Pages\\\\PasswordReset\\\\RequestPasswordReset'', ''onValidationError''\} will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Pages/Auth/PasswordReset/RequestPasswordReset.php
+
+		-
+			message: '#^Call to function is_callable\(\) with array\{''Filament\\\\Auth\\\\Pages\\\\Register'', ''onValidationError''\} will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: src/Pages/Auth/Register.php
+
+		-
+			message: '#^Offset ''error\-codes'' on \*NEVER\* on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Rules/TurnstileRule.php
+
+		-
+			message: '#^Offset ''success'' on array\{success\: bool, error\-codes\?\: array\<int, string\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Rules/TurnstileRule.php
+
+		-
+			message: '#^Anonymous function should return Happenv\\FilamentTurnstile\\Forms\\Components\\Turnstile but returns Closure\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Testing/TestsTurnstile.php
+
+		-
+			message: '#^Call to an undefined method Closure\:\:isHidden\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Testing/TestsTurnstile.php
+
+		-
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with Closure and non\-falsy\-string will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
+			count: 1
+			path: src/Testing/TestsTurnstile.php
+
+		-
+			message: '#^PHPDoc tag @mixin contains generic class Livewire\\Features\\SupportTesting\\Testable but does not specify its types\: TComponent$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Testing/TestsTurnstile.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Closure\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Testing/TestsTurnstile.php

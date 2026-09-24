@@ -1,43 +1,69 @@
 {
     "name": "happenv-com/filament-turnstile",
     "description": "Cloudflare Turnstile panel plugin for Filament v4 and v5 — register once, auto-protect login (and optionally registration / password reset).",
+    "license": "MIT",
     "keywords": [
+        "happenv",
+        "laravel",
+        "filamentphp",
         "filament",
         "filament-plugin",
-        "laravel",
+        "filament-turnstile",
         "turnstile",
         "cloudflare",
         "captcha"
     ],
-    "homepage": "https://github.com/happenv-com/filament-turnstile",
-    "license": "MIT",
     "authors": [
+        {
+            "name": "Happenv sp. z o.o.",
+            "email": "code@happenv.com",
+            "homepage": "https://happenv.com",
+            "role": "Maintainer"
+        },
+        {
+            "name": "webard",
+            "email": "code@webard.me",
+            "homepage": "https://github.com/webard",
+            "role": "Developer"
+        },
         {
             "name": "Muazzam Builds",
             "email": "me@muazzamalikhan.com",
-            "homepage": "https://github.com/muazzambuilds"
-        },
-        {
-            "name": "Happenv",
-            "email": "code@happenv.com",
-            "homepage": "https://github.com/happenv-com"
+            "homepage": "https://github.com/muazzambuilds",
+            "role": "Original author"
         }
     ],
+    "homepage": "https://github.com/happenv-com/filament-turnstile",
+    "support": {
+        "issues": "https://github.com/happenv-com/filament-turnstile/issues",
+        "source": "https://github.com/happenv-com/filament-turnstile",
+        "security": "https://github.com/happenv-com/filament-turnstile/security/policy"
+    },
     "require": {
         "php": "^8.2",
-        "filament/filament": "^4.0|^5.0",
-        "illuminate/contracts": "^11.0|^12.0|^13.0",
-        "illuminate/http": "^11.0|^12.0|^13.0",
-        "illuminate/support": "^11.0|^12.0|^13.0",
+        "filament/filament": "^4.0 || ^5.0",
+        "illuminate/contracts": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/http": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0",
         "spatie/laravel-package-tools": "^1.16"
     },
     "require-dev": {
-        "orchestra/testbench": "^11.0",
-        "pestphp/pest": "^5.0",
-        "pestphp/pest-plugin-browser": "^5.0",
-        "pestphp/pest-plugin-laravel": "^5.0",
-        "pestphp/pest-plugin-livewire": "^5.0"
+        "driftingly/rector-laravel": "^2.1",
+        "ergebnis/composer-normalize": "^2.48",
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.24",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "pestphp/pest": "^4.0 || ^5.0",
+        "pestphp/pest-plugin-arch": "^4.0 || ^5.0",
+        "pestphp/pest-plugin-browser": "^4.0 || ^5.0",
+        "pestphp/pest-plugin-laravel": "^4.0 || ^5.0",
+        "pestphp/pest-plugin-livewire": "^4.0 || ^5.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "rector/rector": "^2.1"
     },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Happenv\\FilamentTurnstile\\": "src/"
@@ -48,7 +74,18 @@
             "Happenv\\FilamentTurnstile\\Tests\\": "tests/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
     "extra": {
+        "branch-alias": {
+            "dev-1.x": "1.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Happenv\\FilamentTurnstile\\FilamentTurnstileServiceProvider"
@@ -56,15 +93,42 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest --exclude-testsuite=Browser",
-        "test:browser": "vendor/bin/pest --testsuite=Browser"
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "ci": [
+            "@normalize-composer-test",
+            "@rector-test",
+            "@pint-test",
+            "@phpstan",
+            "@test"
+        ],
+        "cs": [
+            "@normalize-composer",
+            "@rector",
+            "@pint"
+        ],
+        "normalize-composer": "@composer normalize --ansi",
+        "normalize-composer-test": "@composer normalize --dry-run --ansi",
+        "phpstan": "phpstan analyse --ansi",
+        "pint": "pint",
+        "pint-test": "pint --test",
+        "rector": "rector process",
+        "rector-test": "rector process --dry-run",
+        "test": "pest --testsuite=Unit,Feature",
+        "test-browser": "pest --testsuite=Browser",
+        "test-coverage": "pest --testsuite=Unit,Feature --coverage"
     },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "scripts-descriptions": {
+        "ci": "Runs every CI gate locally: composer.json normalization, Rector, Pint, PHPStan and the test suite.",
+        "cs": "Fixes code style: composer normalize, Rector, then Pint (Rector adds imports, Pint sorts them).",
+        "normalize-composer": "Normalizes composer.json.",
+        "normalize-composer-test": "Checks composer.json is normalized.",
+        "phpstan": "Runs PHPStan.",
+        "pint": "Formats the code with Pint.",
+        "pint-test": "Checks the code style with Pint.",
+        "rector": "Applies Rector refactorings.",
+        "rector-test": "Shows pending Rector refactorings.",
+        "test": "Runs the unit and feature tests.",
+        "test-browser": "Runs the browser tests (needs `npx playwright install chromium` once).",
+        "test-coverage": "Runs the unit and feature tests with code coverage (needs pcov or Xdebug)."
+    }
 }

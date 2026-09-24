@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
-         colors="true"
-         cacheDirectory=".phpunit.cache">
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+    executionOrder="random"
+    failOnWarning="true"
+    failOnDeprecation="true"
+    failOnRisky="true"
+    failOnEmptyTestSuite="true"
+    beStrictAboutOutputDuringTests="true"
+    cacheDirectory=".phpunit.cache"
+>
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -15,9 +23,10 @@
             <directory>tests/Browser</directory>
         </testsuite>
     </testsuites>
-    <source>
+    <!-- Deprecations raised by dependencies are theirs to fix; only the package's own count. -->
+    <source ignoreIndirectDeprecations="true">
         <include>
-            <directory>src</directory>
+            <directory suffix=".php">src</directory>
         </include>
     </source>
     <php>

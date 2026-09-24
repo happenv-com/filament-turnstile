@@ -1,7 +1,7 @@
 <?php
 
 dataset('locales', function (): array {
-    $locales = array_map('basename', glob(__DIR__ . '/../../resources/lang/*', GLOB_ONLYDIR));
+    $locales = array_map(basename(...), glob(__DIR__ . '/../../resources/lang/*', GLOB_ONLYDIR));
 
     return array_values(array_diff($locales, ['en']));
 });

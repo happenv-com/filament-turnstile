@@ -7,7 +7,7 @@ use Happenv\FilamentTurnstile\Tests\Fixtures\User;
 /*
  * These tests load the real widget from challenges.cloudflare.com with
  * Cloudflare's test site key, which solves itself and hands the page the
- * dummy token. Run them with `composer test:browser`.
+ * dummy token. Run them with `composer test-browser`.
  */
 
 beforeEach(function (): void {
@@ -30,11 +30,11 @@ it('logs the user in through Turnstile and the multi-factor challenge', function
         ->fill('[id="form.email"]', 'jane@example.com')
         ->fill('[id="form.password"]', 'password')
         ->submit()
-        ->waitForText('Code')
+        ->assertSee('Code')
         ->assertNotPresent('.fi-fo-turnstile')
         ->fill('[id="multiFactorChallengeForm.code.code"]', CodeMultiFactorProvider::CODE)
         ->submit()
-        ->waitForText('Dashboard')
+        ->assertSee('Dashboard')
         ->assertPathIs('/admin')
         ->assertNoJavaScriptErrors();
 });
@@ -50,7 +50,7 @@ it('shows the error and keeps the user out when the server rejects the token', f
         ->fill('[id="form.email"]', 'jane@example.com')
         ->fill('[id="form.password"]', 'password')
         ->submit()
-        ->waitForText(__('filament-turnstile::validation.invalid-input-response'))
+        ->assertSee(__('filament-turnstile::validation.invalid-input-response'))
         ->assertPathIs('/admin/login')
         ->assertPresent('.fi-fo-turnstile')
         ->assertNoJavaScriptErrors();
@@ -64,7 +64,7 @@ it('registers the user through Turnstile', function (): void {
         ->fill('[id="form.password"]', 'password')
         ->fill('[id="form.passwordConfirmation"]', 'password')
         ->submit()
-        ->waitForText('Dashboard')
+        ->assertSee('Dashboard')
         ->assertPathIs('/admin')
         ->assertNoJavaScriptErrors();
 

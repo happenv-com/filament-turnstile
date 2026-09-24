@@ -3,6 +3,7 @@
 namespace Happenv\FilamentTurnstile;
 
 use Closure;
+use Filament\Auth\Pages\PasswordReset\ResetPassword;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Happenv\FilamentTurnstile\Pages\Auth\Login;
@@ -57,7 +58,7 @@ class TurnstilePlugin implements Plugin
             $panel->passwordReset(
                 RequestPasswordReset::class,
                 $panel->getResetPasswordRouteAction()
-                    ?? \Filament\Auth\Pages\PasswordReset\ResetPassword::class,
+                    ?? ResetPassword::class,
             );
         }
     }

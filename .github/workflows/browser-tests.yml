@@ -1,0 +1,86 @@
+name: 'Browser Tests'
+
+# tests/Browser: Pest's browser plugin drives a real Chromium through
+# Playwright against the test panel. Slower than the rest of the suite and
+# needs a browser, so it runs as its own job on one PHP / Laravel / Filament
+# combination — the unit and feature suites cover the version matrix.
+#
+# The tests load the real Turnstile widget from challenges.cloudflare.com with
+# Cloudflare's test site key, so the job needs network access (GitHub-hosted
+# runners have it).
+
+on:
+  push:
+    branches:
+      - '*.x'
+      - main
+      - develop
+    paths-ignore:
+      - '**.md'
+
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths-ignore:
+      - '**.md'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, intl, fileinfo, sockets
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: |
+          composer update --prefer-dist --no-interaction --no-progress
+          npm ci --ignore-scripts
+
+      # `--with-deps` installs the system libraries Chromium needs through apt,
+      # which needs root. A self-hosted runner without passwordless sudo must
+      # have them preinstalled; then drop the flag.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Execute browser tests
+        run: vendor/bin/pest --testsuite=Browser --ci
+
+      - name: Upload screenshots of failed tests
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-screenshots
+          path: tests/Browser/Screenshots
+          if-no-files-found: ignore
+          retention-days: 7
