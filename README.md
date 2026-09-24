@@ -1,37 +1,48 @@
 # Filament Turnstile
 
+[![Latest Version](https://img.shields.io/github/v/release/happenv-com/filament-turnstile?style=flat-square&label=version)](https://github.com/happenv-com/filament-turnstile/releases)
+[![Tests](https://img.shields.io/github/actions/workflow/status/happenv-com/filament-turnstile/tests.yml?label=tests&style=flat-square)](https://github.com/happenv-com/filament-turnstile/actions/workflows/tests.yml)
+[![PHPStan](https://img.shields.io/github/actions/workflow/status/happenv-com/filament-turnstile/phpstan.yml?label=phpstan&style=flat-square)](https://github.com/happenv-com/filament-turnstile/actions/workflows/phpstan.yml)
+[![Quality](https://img.shields.io/github/actions/workflow/status/happenv-com/filament-turnstile/quality.yml?label=code%20quality&style=flat-square)](https://github.com/happenv-com/filament-turnstile/actions/workflows/quality.yml)
+[![Total Downloads](https://img.shields.io/packagist/dt/happenv-com/filament-turnstile.svg?style=flat-square)](https://packagist.org/packages/happenv-com/filament-turnstile)
+[![License](https://img.shields.io/github/license/happenv-com/filament-turnstile.svg?style=flat-square)](LICENSE.md)
+
 Cloudflare Turnstile panel plugin for **Filament v4 and v5**. Register it once on a panel and login is protected automatically — optionally registration and password-reset request too. No form schema edits for the common case.
 
 Based on [muazzambuilds/filament-turnstile](https://github.com/muazzambuilds/filament-turnstile) by Muazzam Builds.
 
+```php
+use Happenv\FilamentTurnstile\TurnstilePlugin;
+
+$panel->plugin(TurnstilePlugin::make());
+```
+
 ## Key features
 
-- **Login, registration and password reset** — one panel plugin protects Filament's auth pages; each page is switched on or off on its own.
+- **Login, registration and password reset** — one panel plugin protects Filament's auth pages; each page is switched on or off on its own. See [Panel plugin](#panel-plugin-recommended).
 - **Multi-factor authentication aware** — Turnstile runs on the password step only, never again on the app code or passkey challenge.
-- **Custom auth pages** — one trait per page (`Login`, `Register`, `RequestPasswordReset`) adds Turnstile to your own subclasses, plus a `Turnstile` form field for any other Filament form.
-- **Testing helpers** — Livewire test mixins (`assertTurnstileBlocks()`, `assertTurnstileAllows()`, `passTurnstile()`, …) for Pest and PHPUnit, with Cloudflare's test keys answered locally, so tests never reach Cloudflare.
+- **Custom auth pages** — one trait per page (`Login`, `Register`, `RequestPasswordReset`) adds Turnstile to your own subclasses, plus a `Turnstile` form field for any other Filament form. See [Custom auth pages](#custom-auth-pages).
+- **Testing helpers** — Livewire test mixins (`assertTurnstileBlocks()`, `assertTurnstileAllows()`, `passTurnstile()`, …) for Pest and PHPUnit, with Cloudflare's test keys answered locally, so tests never reach Cloudflare. See [Testing your application](#testing-your-application).
 - **Laravel 11, 12 and 13, Filament 4 and 5** — see [Requirements](#requirements).
 - **Translations** — validation messages in 64 languages, every locale Filament ships. See [Supported languages](#supported-languages).
 - **Safe without keys** — with no keys configured the widget is hidden and verification is skipped, so local apps still boot.
 
 ## Requirements
 
-| Dependency | Version |
-|---|---|
-| PHP | `^8.2` |
-| Laravel | `^11` / `^12` / `^13` |
-| Filament | `^4.0` / `^5.0` |
+| Package  | Versions      |
+|----------|---------------|
+| PHP      | 8.2 – 8.5     |
+| Laravel  | 11, 12, 13    |
+| Filament | 4, 5          |
+
+CI runs the test suite on PHP 8.3 – 8.5 with Laravel 12 and 13 and Filament 4 and 5. PHP 8.2 and Laravel 11 are allowed by `composer.json` but cannot be tested in CI (the test tooling needs PHP 8.3, and Composer refuses every Laravel 11 release because of security advisories).
 
 ## Installation
 
+Install the package via Composer:
+
 ```bash
 composer require happenv-com/filament-turnstile
-```
-
-Publish the config (optional):
-
-```bash
-php artisan vendor:publish --tag=filament-turnstile-config
 ```
 
 Add your keys to `.env`:
@@ -42,6 +53,43 @@ TURNSTILE_SECRET_KEY=your-secret-key
 ```
 
 Create a widget and get keys at [dash.cloudflare.com](https://dash.cloudflare.com) → **Turnstile**.
+
+Register the plugin in your panel provider — see [Panel plugin](#panel-plugin-recommended) below.
+
+The widget's wrapper uses a few Tailwind classes. If your panel uses a [custom theme](https://filamentphp.com/docs/5.x/styling/overview#creating-a-custom-theme), add the package's views to its CSS file so Tailwind generates them:
+
+```css
+@source '../../../../vendor/happenv-com/filament-turnstile/resources/**/*.blade.php';
+```
+
+## Configuration
+
+Publish the config file (optional):
+
+```bash
+php artisan vendor:publish --tag=filament-turnstile-config
+```
+
+```php
+// config/filament-turnstile.php
+return [
+    'site_key' => env('TURNSTILE_SITE_KEY'),
+    'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    'verify_url' => env('TURNSTILE_VERIFY_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),
+    'connect_timeout' => (int) env('TURNSTILE_CONNECT_TIMEOUT', 5),
+    'timeout' => (int) env('TURNSTILE_TIMEOUT', 10),
+    'theme' => env('TURNSTILE_THEME', 'auto'),
+    'size' => env('TURNSTILE_SIZE', 'flexible'),
+    'language' => env('TURNSTILE_LANGUAGE'),
+    'reset_event' => env('TURNSTILE_RESET_EVENT', 'turnstile-reset'),
+];
+```
+
+Optionally, publish the views:
+
+```bash
+php artisan vendor:publish --tag=filament-turnstile-views
+```
 
 ## Usage
 
@@ -160,7 +208,9 @@ Register the page yourself and turn off the plugin's swap for it, otherwise the 
 
 Use the login trait (not the generic `InteractsWithTurnstile`) on login pages: it keeps Turnstile off the multi-factor challenge step.
 
-## Local / CI testing
+## Testing your application
+
+### Local and CI keys
 
 Cloudflare test keys (any hostname, including `localhost`):
 
@@ -174,7 +224,7 @@ With a test site key the widget produces the dummy token `XXXX.DUMMY.TOKEN.XXXX`
 
 If keys are missing, the widget is hidden and server validation is skipped so local apps without Turnstile still boot.
 
-## Testing your app
+### Livewire test helpers
 
 The package adds Turnstile helpers to Livewire's test object (`Livewire::test(...)`, or `livewire(...)` from [pest-plugin-livewire](https://pestphp.com/docs/plugins#livewire)), the same way Filament adds `fillForm()` — they work in Pest and PHPUnit alike. Each helper switches the app to the Cloudflare test keys above and fills the dummy token, so no request reaches Cloudflare.
 
@@ -252,21 +302,6 @@ it('logs in through Turnstile', function () {
 
 The widget loads from `challenges.cloudflare.com`, so browser tests need network access.
 
-## Configuration
-
-```php
-// config/filament-turnstile.php
-return [
-    'site_key' => env('TURNSTILE_SITE_KEY'),
-    'secret_key' => env('TURNSTILE_SECRET_KEY'),
-    'verify_url' => env('TURNSTILE_VERIFY_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),
-    'theme' => env('TURNSTILE_THEME', 'auto'),
-    'size' => env('TURNSTILE_SIZE', 'flexible'),
-    'language' => env('TURNSTILE_LANGUAGE'),
-    'reset_event' => env('TURNSTILE_RESET_EVENT', 'turnstile-reset'),
-];
-```
-
 ## Translations
 
 Validation messages ship in every locale Filament ships — see [Supported languages](#supported-languages). The app locale picks the language.
@@ -279,33 +314,7 @@ php artisan vendor:publish --tag=filament-turnstile-translations
 
 The widget itself follows the browser language; set `->language()` or `TURNSTILE_LANGUAGE` to fix it.
 
-## Publish views
-
-```bash
-php artisan vendor:publish --tag=filament-turnstile-views
-```
-
-## Testing this package
-
-The tests use Pest 5 with the Laravel, Livewire and browser plugins, so they need PHP 8.4 and run against Laravel 13 and Filament 5.
-
-```bash
-composer install
-composer test
-```
-
-The browser tests drive the real widget from `challenges.cloudflare.com` with Cloudflare's test keys, so they need network access and [Pest's browser plugin](https://pestphp.com/docs/browser-testing) set up with Playwright:
-
-```bash
-npm install
-npx playwright install chromium
-composer test:browser
-```
-
-## License
-MIT — see [LICENSE](LICENSE).
-
-## Supported languages
+### Supported languages
 
 | Language | Language | Language | Language |
 |---|---|---|---|
@@ -325,3 +334,50 @@ MIT — see [LICENSE](LICENSE).
 | Spanish `es` | Khmer `km` | Romanian `ro` | Chinese (Simplified) `zh_CN` |
 | Estonian `et` | Korean `ko` | Russian `ru` | Chinese (Hong Kong) `zh_HK` |
 | Basque `eu` | Kurdish `ku` | Slovak `sk` | Chinese (Traditional) `zh_TW` |
+
+## Development
+
+```bash
+composer test          # unit and feature tests
+composer test-browser  # browser tests (once: npm ci && npx playwright install chromium)
+composer phpstan       # static analysis
+composer cs            # fix code style: composer normalize, Rector, Pint
+composer ci            # everything CI checks, locally
+```
+
+The browser tests drive the real widget from `challenges.cloudflare.com` with Cloudflare's test keys, so they need network access.
+
+## Upgrading
+
+Breaking changes and how to migrate are described in [UPGRADING](UPGRADING.md) for every major version.
+
+## Changelog
+
+See [CHANGELOG](CHANGELOG.md) and [GitHub releases](https://github.com/happenv-com/filament-turnstile/releases) for what has changed recently.
+
+## Contributing
+
+See [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
+
+## Security vulnerabilities
+
+Please review [our security policy](.github/SECURITY.md) on how to report security vulnerabilities.
+
+## Credits
+
+- [Happenv sp. z o.o.](https://happenv.com)
+- [webard](https://github.com/webard)
+- [Muazzam Builds](https://github.com/muazzambuilds) — author of the original [muazzambuilds/filament-turnstile](https://github.com/muazzambuilds/filament-turnstile)
+- [All contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). See [License File](LICENSE.md) for more information.
+
+---
+
+<p align="center">
+    <a href="https://happenv.com">
+        <img src="art/happenv-logo.png" alt="Happenv" width="400">
+    </a>
+</p>
