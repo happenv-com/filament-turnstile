@@ -5,8 +5,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use Rector\Php71\Rector\FuncCall\RemoveExtraParametersRector;
 use Rector\Php81\Rector\Array_\ArrayToFirstClassCallableRector;
-use RectorLaravel\Rector\Class_\EmptyGuardedPropertyToUnguardedAttributeRector;
-use RectorLaravel\Rector\Class_\TablePropertyToTableAttributeRector;
+use RectorLaravel\Set\LaravelLevelSetList;
 
 /*
  * Library, not an application: no privatization and no "treat classes as
@@ -19,7 +18,16 @@ return RectorConfig::configure()
         __DIR__ . '/src',
         __DIR__ . '/tests',
     ])
-    ->withComposerBased(laravel: true)
+    // The LOWEST Laravel the package supports, not the installed one:
+    // `withComposerBased(laravel: true)` would follow the newest Laravel that
+    // `composer update` resolves and rewrite code into forms (e.g. Laravel 13
+    // Eloquent attributes) that break the older versions CI still tests.
+    // Laravel 11 is still allowed by composer.json (though not testable in CI),
+    // so src/ must stay valid for it. Raise it when the package drops a Laravel
+    // version.
+    ->withSets([
+        LaravelLevelSetList::UP_TO_LARAVEL_110,
+    ])
     ->withPreparedSets(
         deadCode: true,
         codeQuality: true,
@@ -33,10 +41,6 @@ return RectorConfig::configure()
         // in a trait), and a path-scoped skip does not prevent it. That array is
         // a runtime check anyway, not a callable to convert.
         ArrayToFirstClassCallableRector::class,
-        // Laravel 13-only model attributes; the package still supports (and CI
-        // still tests) Laravel 12, where they do not exist.
-        EmptyGuardedPropertyToUnguardedAttributeRector::class,
-        TablePropertyToTableAttributeRector::class,
         // The Livewire test macros call each other through `$this` (the Testable),
         // with arguments Rector matches against the mixin's argument-less
         // methods and wrongly strips.
