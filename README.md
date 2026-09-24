@@ -1,5 +1,11 @@
 # Filament Turnstile
 
+<div class="filament-hidden">
+
+![Filament Turnstile](art/banner.png)
+
+</div>
+
 [![Latest Version](https://img.shields.io/github/v/release/happenv-com/filament-turnstile?style=flat-square&label=version)](https://github.com/happenv-com/filament-turnstile/releases)
 [![Tests](https://img.shields.io/github/actions/workflow/status/happenv-com/filament-turnstile/tests.yml?label=tests&style=flat-square)](https://github.com/happenv-com/filament-turnstile/actions/workflows/tests.yml)
 [![PHPStan](https://img.shields.io/github/actions/workflow/status/happenv-com/filament-turnstile/phpstan.yml?label=phpstan&style=flat-square)](https://github.com/happenv-com/filament-turnstile/actions/workflows/phpstan.yml)
