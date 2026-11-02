@@ -58,7 +58,7 @@ trait InteractsWithTurnstileLogin
         }
 
         try {
-            $challengedUserId = decrypt($this->userUndertakingMultiFactorAuthentication);
+            $challenge = decrypt($this->userUndertakingMultiFactorAuthentication);
         } catch (DecryptException) {
             return false;
         }
@@ -68,6 +68,16 @@ trait InteractsWithTurnstileLogin
             $this->getCredentialsFromFormData($this->data ?? []),
         );
 
-        return $submittedUser?->getAuthIdentifier() === $challengedUserId;
+        if (! $submittedUser) {
+            return false;
+        }
+
+        // Newer Filament versions store the identifier together with a key scoped to the guard and user class.
+        if (is_array($challenge)) {
+            return is_string($challenge['userKey'] ?? null)
+                && hash_equals($challenge['userKey'], Filament::getUserScopedAuthIdentifier($submittedUser));
+        }
+
+        return $submittedUser->getAuthIdentifier() === $challenge;
     }
 }
