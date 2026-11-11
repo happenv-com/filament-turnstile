@@ -308,6 +308,10 @@ it('logs in through Turnstile', function () {
 
 The widget loads from `challenges.cloudflare.com`, so browser tests need network access.
 
+## AI assistants (Laravel Boost)
+
+The package ships a [Laravel Boost](https://laravel.com/docs/boost) skill, `filament-turnstile-development`, in `resources/boost/skills/`. `php artisan boost:install` (or `boost:update`) offers it to your coding agent: registering the plugin, custom auth pages with the traits, the `Turnstile` field on any other form or Livewire component, and the testing helpers.
+
 ## Translations
 
 Validation messages ship in every locale Filament ships — see [Supported languages](#supported-languages). The app locale picks the language.
