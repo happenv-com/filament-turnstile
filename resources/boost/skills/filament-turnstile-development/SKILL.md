@@ -119,22 +119,26 @@ use Happenv\FilamentTurnstile\Forms\Components\Turnstile;
 
 Turnstile::make('cf-turnstile-response')
     ->turnstileAction('contact')   // label shown in Cloudflare analytics; not checked server-side
-    ->theme('dark')->size('compact')->language('pl')
-    ->resetEvent('turnstile-reset');
+    ->theme('dark')->size('compact')->language('pl');
 ```
 
 - It is `required` and carries `TurnstileRule` only while the widget renders. It is `dehydrated(false)`: the token is never in `$this->form->getState()`, so it is never saved to a model.
 - A token is single use. After a failed validation or a successful submit that leaves the form on screen, the widget must be reset or the next submit fails. Use the trait on the component to get `dispatchTurnstileReset()` and the automatic reset on validation errors.
+- `->resetEvent('...')` changes only the browser event this one widget listens to. `dispatchTurnstileReset()` always dispatches the configured `filament-turnstile.reset_event`, so a field with its own event must be reset with `$this->dispatch('that-event')`. Normally leave `resetEvent()` alone.
 
 On a Filament `Page` (extends `Filament\Pages\Page`), just `use InteractsWithTurnstile;`.
 
 On a plain Livewire component with `InteractsWithSchemas` (or `InteractsWithForms`), define `onValidationError()` in the class yourself. Both traits declare it, so without your own method PHP stops with a trait collision; and the trait's version, picked with `insteadof`, forwards to `parent::onValidationError()`, which Livewire's `Component` answers with a `BadMethodCallException` on the first failed validation.
 
 ```php
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Schemas\Schema;
 use Happenv\FilamentTurnstile\Concerns\InteractsWithTurnstile;
 use Illuminate\Validation\ValidationException;
+use Livewire\Component;
 
 class ContactForm extends Component implements HasSchemas
 {
@@ -188,6 +192,7 @@ The package mixes helpers into Livewire's `Testable` (works with `Livewire::test
 
 ```php
 use Happenv\FilamentTurnstile\Pages\Auth\Login;   // or the app's own page
+use Livewire\Livewire;
 
 Livewire::test(Login::class)
     ->fillForm(['email' => 'jane@example.com', 'password' => 'password'])
