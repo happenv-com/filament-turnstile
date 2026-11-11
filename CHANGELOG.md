@@ -2,6 +2,21 @@
 
 All notable changes to `filament-turnstile` are documented in this file. Each section is written automatically from the GitHub release notes when a release is published — do not edit it by hand.
 
+## v1.2.2 - 2026-11-11
+
+<!-- Release notes generated using configuration in .github/release.yml at 1.x -->
+### What's Changed
+
+#### Dependencies
+
+* chore(deps): bump the github-actions group with 2 updates by @dependabot[bot] in https://github.com/happenv-com/filament-turnstile/pull/11
+
+#### Other
+
+* docs: ship a Laravel Boost skill by @webard in https://github.com/happenv-com/filament-turnstile/pull/12
+
+**Full Changelog**: https://github.com/happenv-com/filament-turnstile/compare/v1.2.1...v1.2.2
+
 ## v1.2.1 - 2026-11-02
 
 <!-- Release notes generated using configuration in .github/release.yml at 1.x -->
