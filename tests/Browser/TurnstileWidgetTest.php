@@ -70,3 +70,25 @@ it('registers the user through Turnstile', function (): void {
 
     expect(User::where('email', 'jane@example.com')->exists())->toBeTrue();
 });
+
+// Cloudflare's iframe sits in a closed shadow root, so read the theme the widget was rendered with.
+const TURNSTILE_THEME_SCRIPT = 'window.Alpine.$data(document.querySelector(".fi-fo-turnstile")).renderedTheme';
+
+it('follows the panel theme instead of the operating system', function (): void {
+    $page = visit('/admin/login')
+        ->inDarkMode()
+        ->assertScript(TURNSTILE_THEME_SCRIPT, 'dark');
+
+    // Switching the panel to light re-renders the widget while the operating system stays dark.
+    $page->script("window.dispatchEvent(new CustomEvent('theme-changed', { detail: 'light' }))");
+
+    $page->assertScript(TURNSTILE_THEME_SCRIPT, 'light')
+        ->assertScript(TURNSTILE_TOKEN_SCRIPT, TestsTurnstile::DUMMY_TOKEN);
+
+    // A fresh load keeps the panel's stored light mode.
+    $page->script('location.reload()');
+
+    $page->assertScript(TURNSTILE_THEME_SCRIPT, 'light')
+        ->assertScript(TURNSTILE_TOKEN_SCRIPT, TestsTurnstile::DUMMY_TOKEN)
+        ->assertNoJavaScriptErrors();
+});

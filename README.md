@@ -137,7 +137,7 @@ Login protection works with Filament multi-factor authentication (app codes, pas
 
 ```php
 TurnstilePlugin::make()
-    ->theme('auto')      // auto | light | dark
+    ->theme('auto')      // auto (follows the panel's light/dark mode) | light | dark
     ->size('flexible')   // normal | flexible | compact
     ->language('en-US')
     ->enabled(true);
