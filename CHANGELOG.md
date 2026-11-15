@@ -2,6 +2,21 @@
 
 All notable changes to `filament-turnstile` are documented in this file. Each section is written automatically from the GitHub release notes when a release is published — do not edit it by hand.
 
+## v1.2.4 - 2026-11-15
+
+<!-- Release notes generated using configuration in .github/release.yml at 1.x -->
+### What's Changed
+
+#### Dependencies
+
+* chore(deps): bump the github-actions group with 2 updates by @dependabot[bot] in https://github.com/happenv-com/filament-turnstile/pull/14
+
+#### Other
+
+* fix: auto theme follows the panel's light/dark mode by @webard in https://github.com/happenv-com/filament-turnstile/pull/15
+
+**Full Changelog**: https://github.com/happenv-com/filament-turnstile/compare/v1.2.3...v1.2.4
+
 ## v1.2.3 - 2026-11-11
 
 <!-- Release notes generated using configuration in .github/release.yml at 1.x -->
