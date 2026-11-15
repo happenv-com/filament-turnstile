@@ -16,6 +16,39 @@
         wire:ignore
         x-data="{
             widgetId: null,
+            renderedTheme: null,
+            themeObserver: null,
+            {{-- 'auto' follows the panel's theme (the `dark` class Filament keeps on <html>), not the operating system. --}}
+            resolveTheme() {
+                const theme = @js($theme)
+
+                if (theme !== 'auto') {
+                    return theme
+                }
+
+                return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+            },
+            watchPanelTheme() {
+                if (@js($theme) !== 'auto' || this.themeObserver !== null) {
+                    return
+                }
+
+                this.themeObserver = new MutationObserver(() => {
+                    if (this.widgetId === null || this.resolveTheme() === this.renderedTheme) {
+                        return
+                    }
+
+                    turnstile.remove(this.widgetId)
+                    this.widgetId = null
+                    $wire.set(@js($statePath), null)
+                    this.render()
+                })
+
+                this.themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+            },
+            destroy() {
+                this.themeObserver?.disconnect()
+            },
             render() {
                 if (typeof turnstile === 'undefined') {
                     return
@@ -27,9 +60,11 @@
                     return
                 }
 
+                this.renderedTheme = this.resolveTheme()
+
                 this.widgetId = turnstile.render(el, {
                     sitekey: @js($siteKey),
-                    theme: @js($theme),
+                    theme: this.renderedTheme,
                     size: @js($size),
                     language: @js($language),
                     action: @js($action),
@@ -44,6 +79,8 @@
                         $wire.set(@js($statePath), null)
                     },
                 })
+
+                this.watchPanelTheme()
             },
             reset() {
                 if (typeof turnstile === 'undefined' || this.widgetId === null) {
