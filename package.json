@@ -2,6 +2,6 @@
     "private": true,
     "type": "module",
     "devDependencies": {
-        "playwright": "^1.64"
+        "playwright": "^1.65"
     }
 }
